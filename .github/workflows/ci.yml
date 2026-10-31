@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install openpyxl
+      - name: Script must parse
+        run: python -m py_compile scripts/build_template.py
+      - name: Rebuild the workbook from source
+        run: python scripts/build_template.py
+      - name: Verify the workbook opens, has the six sheets, no macros, and sane formulas
+        run: |
+          python - <<'EOF'
+          from openpyxl import load_workbook
+          wb = load_workbook("AI-Risk-Assessment-Template.xlsx")
+          expected = ["01_Methodology", "02_AI_System_Inventory", "03_Risk_Scales",
+                      "04_AI_Risk_Register", "05_Impact_Assessment_Summary", "06_Dashboard"]
+          assert wb.sheetnames == expected, wb.sheetnames
+          assert not getattr(wb, "vba_archive", None), "workbook must not contain macros"
+          reg = wb["04_AI_Risk_Register"]
+          risks = [r[0].value for r in reg.iter_rows(min_row=5, max_row=54, max_col=1) if r[0].value]
+          assert len(risks) == 8, risks
+          assert str(reg["J5"].value).startswith("=IF("), reg["J5"].value
+          inv = wb["02_AI_System_Inventory"]
+          systems = [r[0].value for r in inv.iter_rows(min_row=5, max_row=24, max_col=1) if r[0].value]
+          assert len(systems) == 3, systems
+          assert len(wb["06_Dashboard"]._charts) >= 1, "dashboard chart missing"
+          print("OK:", wb.sheetnames, len(risks), "risks,", len(systems), "systems")
+          EOF
