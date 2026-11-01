@@ -33,7 +33,7 @@ jobs:
           reg = wb["04_AI_Risk_Register"]
           risks = [r[0].value for r in reg.iter_rows(min_row=5, max_row=54, max_col=1) if r[0].value]
           assert len(risks) == 8, risks
-          assert str(reg["J5"].value).startswith("=IF("), reg["J5"].value
+          assert str(reg["K5"].value).startswith("=IF("), reg["K5"].value
           inv = wb["02_AI_System_Inventory"]
           systems = [r[0].value for r in inv.iter_rows(min_row=5, max_row=24, max_col=1) if r[0].value]
           assert len(systems) == 3, systems
