@@ -120,6 +120,13 @@ This template supports, but does not replace, professional judgement, legal advi
 assessment or a certification audit. Scores are only as good as the evidence behind them. Use roles, not personal names,
 and keep client names, credentials and confidential incident details out of the file.
 
+## AI assistance
+
+Built with Claude Code as a coding and writing assistant, which is why it appears as a co-author on some commits.
+**Editor and reviewer: Wassim Bizid**, who set the scope, the frameworks and the GRC approach, edited the content
+and decided what was published. Automated tests in CI check the published outputs. This is a maintainer review,
+not an independent one.
+
 ## License
 
 [MIT](LICENSE) — free to use, copy, modify and redistribute.
